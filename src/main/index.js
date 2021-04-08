@@ -47,12 +47,12 @@ function createWindow() {
       nodeIntegrationInWorker: false,
       webSecurity: false,
       experimentalFeatures: true,
-      additionalArguments: [...process.argv],
+      additionalArguments: [...process.argv]
     },
     show: false,
     frame: false,
     transparent: true,
-    icon: path.join(__dirname, '..', '..', 'build', 'icons', '128x128.png'),
+    icon: path.join(__dirname, '..', '..', 'build', 'icons', '128x128.png')
   });
 
   if (isDev) {
