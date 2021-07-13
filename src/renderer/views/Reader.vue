@@ -1,45 +1,45 @@
 <template>
-	<el-container direction="vertical">
-		<titlebar :title="title">
-			<el-button-group>
-				<el-button size="small" icon="el-icon-back" circle @click="onBackBtn" />
-				<el-button size="small" icon="el-icon-s-grid" circle @click="onLibraryBtn" />
-			</el-button-group>
+  <el-container direction="vertical">
+    <titlebar :title="title">
+      <el-button-group>
+        <el-button size="small" icon="el-icon-back" circle @click="onBackBtn" />
+        <el-button size="small" icon="el-icon-s-grid" circle @click="onLibraryBtn" />
+      </el-button-group>
 
-			<toc-menu :toc="toc" :theme="theme" @node-click="onNodeClick"></toc-menu>
+      <toc-menu :toc="toc" :theme="theme" @node-click="onNodeClick" />
 
-			<bookmark-menu
-				:bookmarks="info.bookmarks"
-				:theme="theme"
-				@node-click="onNodeClick"
-				@add-bookmark="addBookmark"
-				@remove-bookmark="removeBookmark"
-			/>
+      <bookmark-menu
+        :bookmarks="info.bookmarks"
+        :theme="theme"
+        @node-click="onNodeClick"
+        @add-bookmark="addBookmark"
+        @remove-bookmark="removeBookmark"
+      />
 
-			<search-menu
-				:search-result="searchResult"
-				:theme="theme"
-				@node-click="onNodeClick"
-				@search="search"
-			/>
+      <search-menu
+        :search-result="searchResult"
+        :theme="theme"
+        @node-click="onNodeClick"
+        @search="search"
+      />
 
-			<theme-menu
-				@theme-change="applytheme"
-				@flow-change="applyflow"
-				@style-change="updateStyle"
-			/>
-		</titlebar>
+      <theme-menu
+        @theme-change="applytheme"
+        @flow-change="applyflow"
+        @style-change="updateStyle"
+      />
+    </titlebar>
 
-		<el-main class="container">
-			<div id="reader" v-loading="!isReady" />
-		</el-main>
+    <el-main class="container">
+      <div id="reader" v-loading="!isReady" />
+    </el-main>
 
-		<el-footer height="45">
-			<el-slider v-model="sliderValue" :step="0.01" :format-tooltip="lableFromPercentage" @change="onSliderValueChange"></el-slider>
-		</el-footer>
+    <el-footer height="45">
+      <el-slider v-model="sliderValue" :step="0.01" :format-tooltip="lableFromPercentage" @change="onSliderValueChange" />
+    </el-footer>
 
-		<buble-menu ref="bubleMenu" @highlight-btn-click="highlightSelection" />
-	</el-container>
+    <buble-menu ref="bubleMenu" @highlight-btn-click="highlightSelection" />
+  </el-container>
 </template>
 
 <script>
@@ -61,7 +61,7 @@ export default {
     BookmarkMenu,
     SearchMenu,
     ThemeMenu,
-    BubleMenu,
+    BubleMenu
   },
   props: {},
 
@@ -81,7 +81,7 @@ export default {
       theme: 'default',
       styleRules: {},
       rendition: {},
-      book: {},
+      book: {}
     };
   },
 
@@ -92,32 +92,32 @@ export default {
     let { id } = this.$route.params;
 
     if (process.platform === 'win32') {
-        id = id.split('\\').pop();
+      id = id.split('\\').pop();
     }
     this.info = this.$db.get(id);
     this.toc = this.info.toc;
     this.info.lastOpen = new Date().getTime();
-    this.buble = this.$refs.bubleMenu
+    this.buble = this.$refs.bubleMenu;
     this.book = new Book(this.info.path);
 
     this._flattenedToc = (function flatten(items) {
       return [].concat(...items.map(item => [item].concat(...flatten(item.children))));
     })(this.toc);
 
-    this._flattenedToc.sort((a,b)=>{
+    this._flattenedToc.sort((a, b) => {
       return a.percentage - b.percentage;
-    })
+    });
 
     this.rendition = new Rendition(this.book, {
       width: '100%',
-      height: '100%',
+      height: '100%'
     });
 
     this.rendition.on('rendered', (e, iframe) => {
-      iframe.iframe.contentWindow.focus()
+      iframe.iframe.contentWindow.focus();
       clickListener(iframe.document, this.rendition, this.flipPage);
       selectListener(iframe.document, this.rendition, this.toggleBuble);
-      swipListener(iframe.document,  this.flipPage);
+      swipListener(iframe.document, this.flipPage);
       wheelListener(iframe.document, this.flipPage);
       keyListener(iframe.document, this.flipPage);
     });
@@ -142,14 +142,14 @@ export default {
       .then(() => {
         this.rendition.attachTo(document.getElementById('reader'));
         this.rendition.display(this.info.lastCfi || 1);
-        this.rendition.themes.registerRules('dark',dark);
+        this.rendition.themes.registerRules('dark', dark);
         this.rendition.themes.registerRules('tan', tan);
         this.rendition.ready = true;
         this.theme = this.$store.getters.theme;
         this.applytheme(this.theme);
       })
-      .then(()=>{
-        this.info.highlights.forEach(cfiRange=>{
+      .then(() => {
+        this.info.highlights.forEach(cfiRange => {
           this.rendition.annotations.highlight(cfiRange);
         });
       })
@@ -177,18 +177,18 @@ export default {
             result.label = result.excerpt;
             return result;
           });
-        }).then(()=>{
+        }).then(() => {
           this.$remote.getCurrentWebContents().findInPage(text);
-        })
+        });
     },
 
-    flipPage(direction){
-      if(direction === 'next') this.nextPage();
-      else if(direction === 'prev') this.prevPage();
+    flipPage(direction) {
+      if (direction === 'next') this.nextPage();
+      else if (direction === 'prev') this.prevPage();
     },
 
-    toggleBuble(event, react, text, cfiRange){
-      if(event==='cleared'){
+    toggleBuble(event, react, text, cfiRange) {
+      if (event === 'cleared') {
         // hide buble
         this.buble.hide();
         return;
@@ -197,9 +197,9 @@ export default {
       this.isBubleVisible = true;
     },
 
-    refreshRendition(){
+    refreshRendition() {
       // re-render to apply theme properly
-      if(this.rendition.manager){
+      if (this.rendition.manager) {
         this.rendition.start();
       }
     },
@@ -240,14 +240,14 @@ export default {
       const { href, cfi, percentage } = location.start;
 
       // TODO : find more minigful name for bookmark
-      const title = `${this.lableFromPercentage(percentage*100)} : At ${Math.floor(
+      const title = `${this.lableFromPercentage(percentage * 100)} : At ${Math.floor(
         this.progress * 1000
       ) / 10}%`;
 
       const bookmark = {
         label: title,
         cfi,
-        href,
+        href
       };
 
       this.info.bookmarks.push(bookmark);
@@ -281,22 +281,22 @@ export default {
       this.rendition.display(cfi);
     },
 
-    updateStyle(rules){
+    updateStyle(rules) {
       this.styleRules = rules;
       this.applyStyle();
       this.refreshRendition();
     },
 
-    applyflow(flow){
-      if(!this.rendition.ready) return;
+    applyflow(flow) {
+      if (!this.rendition.ready) return;
       this.rendition.flow(flow);
     },
 
-    applyStyle(){
-      if(!this.rendition.ready) return;
+    applyStyle() {
+      if (!this.rendition.ready) return;
 
-      this.rendition.getContents().forEach( (content) => {
-			  content.addStylesheetRules(this.styleRules);
+      this.rendition.getContents().forEach((content) => {
+        content.addStylesheetRules(this.styleRules);
       });
     },
 
@@ -307,30 +307,28 @@ export default {
       this.$bus.emit('theme-change', theme);
     },
 
-    tocFromPercentage(percent){
-
-      if(!this._flattenedToc) return {};
+    tocFromPercentage(percent) {
+      if (!this._flattenedToc) return {};
 
       percent /= 100;
 
-      for(let i = 0 ; i < this._flattenedToc.length ; i+=1 ){
-        if(this._flattenedToc[i].percentage > percent){
-          return this._flattenedToc[i-1];
+      for (let i = 0; i < this._flattenedToc.length; i += 1) {
+        if (this._flattenedToc[i].percentage > percent) {
+          return this._flattenedToc[i - 1];
         }
       }
 
       return null;
     },
 
-    lableFromPercentage(percent){
-      let toc = this.tocFromPercentage(percent)
-      if(toc) return toc.label;
+    lableFromPercentage(percent) {
+      let toc = this.tocFromPercentage(percent);
+      if (toc) return toc.label;
       return '';
     }
-  },
+  }
 };
 </script>
-
 
 <style lang="scss" scoped>
 @import '../assets/style';

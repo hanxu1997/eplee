@@ -1,7 +1,7 @@
 <template>
-	<div id="app" ref="app" class="default">
-		<router-view v-loading="!isReady" />
-	</div>
+  <div id="app" ref="app" class="default">
+    <router-view v-loading="!isReady" />
+  </div>
 </template>
 
 <script>
@@ -25,22 +25,21 @@ export default {
       // if epub file is passed in args open file and redirect to reader
       const file = arg;
 
-      addToDB(file, this.$db, (info)=>{
+      addToDB(file, this.$db, (info) => {
         this.isReady = true;
-        this.$router.push({ name: 'Reader', params: { id: info.id } })
+        this.$router.push({ name: 'Reader', params: { id: info.id }});
       });
-    }
-    else{
-        this.isReady = true;
+    } else {
+      this.isReady = true;
     }
 
-    this.$bus.on('theme-change',(theme)=>{
-      this.$refs.app.className = "";
+    this.$bus.on('theme-change', (theme) => {
+      this.$refs.app.className = '';
       this.$refs.app.classList.add(theme);
 
       this.$store.commit('setTheme', theme);
     });
-  },
+  }
 };
 </script>
 
@@ -54,7 +53,6 @@ export default {
 }
 
 </style>
-
 
 <style lang="scss">
 ::-webkit-scrollbar {

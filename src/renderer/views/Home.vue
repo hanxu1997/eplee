@@ -1,12 +1,12 @@
 <template>
-	<el-container direction="vertical">
-		<titlebar backdrop shadow>
-			<el-button size="small" icon="el-icon-plus" circle @click="addFiles" />
-		</titlebar>
-		<el-main>
-			<grid class="grid" :book-list="bookList" />
-		</el-main>
-	</el-container>
+  <el-container direction="vertical">
+    <titlebar backdrop shadow>
+      <el-button size="small" icon="el-icon-plus" circle @click="addFiles" />
+    </titlebar>
+    <el-main>
+      <grid class="grid" :book-list="bookList" />
+    </el-main>
+  </el-container>
 </template>
 
 <script>
@@ -18,11 +18,11 @@ export default {
   name: 'Home',
   components: {
     Titlebar,
-    Grid,
+    Grid
   },
   data() {
     return {
-      bookList: [],
+      bookList: []
     };
   },
   beforeMount() {
@@ -40,17 +40,17 @@ export default {
     addFiles() {
       const files = this.$electron.remote.dialog.showOpenDialog({
         filters: [{ name: 'ePub', extensions: ['epub'] }],
-        properties: ['openFile', 'multiSelections'],
+        properties: ['openFile', 'multiSelections']
       });
       if (files) {
         files.forEach(file => {
-          addToDB(file, this.$db, (info)=>{
+          addToDB(file, this.$db, (info) => {
             this.bookList.unshift(info);
           });
         });
       }
-    },
-  },
+    }
+  }
 };
 </script>
 

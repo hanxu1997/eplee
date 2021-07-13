@@ -9,17 +9,17 @@ export default new Router({
     {
       path: '/',
       name: 'Home',
-      component: Home,
+      component: Home
     },
     {
       path: '/reader/:id',
       name: 'Reader',
       component: Reader, // () => import('@/renderer/components/Reader'),
-      props: true,
+      props: true
     },
     {
       path: '*',
-      redirect: '/',
-    },
-  ],
+      redirect: '/'
+    }
+  ]
 });
